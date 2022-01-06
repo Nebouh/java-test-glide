@@ -1,5 +1,9 @@
 package io.glide;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This is where you have to code.
@@ -17,7 +21,11 @@ public class ThisIsWhereYouCode {
      *         extension without the period otherwise
      */
     public String getFileNameExtension(String filename) {
-        // XXX implement me !
+    	if(filename != null && !filename.isBlank() && filename.contains(".")) {
+    		int lastDot = filename.lastIndexOf('.');
+    		return filename.substring(lastDot+1);
+    	}
+    	
         return null;
     }
 
@@ -28,8 +36,26 @@ public class ThisIsWhereYouCode {
      * @return null if input is null and the longest string otherwise
      */
     public String getLongestString(Object[] array) {
-        // XXX implement me !
-        return null;
+    	
+    	Optional<Object> longestElement = Optional.of(array[0]);
+    	for(int i = 0; i < array.length; i++) {
+    		Optional<Object> currentString = Optional.of(array[i]);
+    		if(isString(longestElement) && isString(currentString) && isLongestString(longestElement, currentString)) {
+    			longestElement = currentString;
+    		} else if (!isString(longestElement) && isString(currentString)) {
+    			longestElement = currentString;
+    		}
+    	}
+    	
+        return longestElement.get().toString();
+    }
+    
+    private boolean isString(Optional<Object> optObj) {
+    	return optObj.isPresent() && optObj.get() instanceof String;
+    }
+    
+    private boolean isLongestString(Optional<Object> longestElement, Optional<Object> currentString) {
+    	return longestElement.get().toString().length() < currentString.get().toString().length();
     }
 
     /**
@@ -40,8 +66,7 @@ public class ThisIsWhereYouCode {
      * @return true if both arrays contains the same values
      */
     public boolean areArraysEquals(String[] array1, String[] array2) {
-        // XXX implement me !
-        return false;
+        return Arrays.equals(array1, array2);
     }
 
     /**
@@ -54,8 +79,30 @@ public class ThisIsWhereYouCode {
      * @return the compressed String or null if the input is null
      */
     public String getCompressedString(String input) {
-        // XXX implement me !
-        return null;
+    	
+    	if(input == null) {
+    		return null;
+    	}
+    	
+    	StringBuffer finalString = new StringBuffer();;
+        Character previouschar = input.charAt(0);
+        
+        int n = 1;
+        for(int i=1; i < input.length(); i+=2){
+        	if(previouschar.equals(input.charAt(i))) {
+        		n++;
+        	} else if (n == 1){
+        		finalString.append(previouschar);
+        	} else {
+        		finalString.append(n);
+        		finalString.append(previouschar);
+        	}
+        	
+        	previouschar = input.charAt(i);
+        	
+        }
+        
+        return finalString.toString();
     }
 
     /**
@@ -68,8 +115,9 @@ public class ThisIsWhereYouCode {
      * @return the sorted array
      */
     public String[] getSortedArray(String[] array) {
-        // XXX implement me !
-        return null;
+    	//TODO : implement Compressor
+    	Arrays.sort(array);
+        return array;
     }
 
 }
