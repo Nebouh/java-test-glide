@@ -1,7 +1,7 @@
 package io.glide;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +37,33 @@ public class ThisIsWhereYouCode {
      */
     public String getLongestString(Object[] array) {
     	
+    	List<Object> listPrep = new ArrayList<Object>();
+    	
+    	for(Object obj : array) {
+    		if(obj instanceof Object[]) {
+    			listPrep.addAll(buildStringArray((Object[]) obj));
+    		} else if (obj instanceof String) {
+    			listPrep.add(obj);
+    		}
+    	}
+    	
+        return getLongestElement(listPrep.toArray()).get().toString();
+    }
+    
+    private List<Object>  buildStringArray(Object[] array) {
+    	List<Object> arrayPrep = new ArrayList<Object>();
+    	for(Object obj : array) {
+    		if(obj instanceof String) {
+    			arrayPrep.add(obj);
+    		} else if (obj instanceof Object[]) {
+    			arrayPrep.addAll(buildStringArray((Object[]) obj));
+    		}
+    	}
+    	
+    	return arrayPrep;
+    }
+    
+    private Optional<Object> getLongestElement(Object[] array) {
     	Optional<Object> longestElement = Optional.of(array[0]);
     	for(int i = 0; i < array.length; i++) {
     		Optional<Object> currentString = Optional.of(array[i]);
@@ -47,7 +74,7 @@ public class ThisIsWhereYouCode {
     		}
     	}
     	
-        return longestElement.get().toString();
+    	return longestElement;
     }
     
     private boolean isString(Optional<Object> optObj) {
@@ -80,26 +107,32 @@ public class ThisIsWhereYouCode {
      */
     public String getCompressedString(String input) {
     	
-    	if(input == null) {
+    	if(input == null || input.isEmpty()) {
     		return null;
     	}
     	
     	StringBuffer finalString = new StringBuffer();;
         Character previouschar = input.charAt(0);
-        
-        int n = 1;
-        for(int i=1; i < input.length(); i+=2){
+
+        int n = 0;
+        for(int i=0; i < input.length(); i++){
         	if(previouschar.equals(input.charAt(i))) {
         		n++;
-        	} else if (n == 1){
-        		finalString.append(previouschar);
-        	} else {
+        	} else if (n > 1) {
         		finalString.append(n);
         		finalString.append(previouschar);
+        		n = 1;
+        	} else {
+        		finalString.append(previouschar);
         	}
-        	
         	previouschar = input.charAt(i);
-        	
+        }
+        
+        if(n > 1) {
+        	finalString.append(n);
+        	finalString.append(previouschar);
+        } else {
+        	finalString.append(previouschar);
         }
         
         return finalString.toString();
@@ -115,9 +148,43 @@ public class ThisIsWhereYouCode {
      * @return the sorted array
      */
     public String[] getSortedArray(String[] array) {
-    	//TODO : implement Compressor
+    	
+    	for(int i = 0; i < array.length; i++) {
+    		array[i] = getCompressedString(array[i]);
+    	}
+    	
     	Arrays.sort(array);
+    	
+    	int nbLetters = 1;
+    	
+    	for(int i = 0; i< array.length; i++) {
+    		StringBuffer finalString = new StringBuffer();
+
+            for(int j=0; j < array[i].length(); j++){
+            	
+            	if(isInteger(array[i].charAt(j)+"")) {
+            		nbLetters = Integer.parseInt(array[i].charAt(j)+"");
+            		while(nbLetters > 0) {
+            			finalString.append(array[i].charAt(j+1));
+            			nbLetters--;
+            		}
+            		j++;
+            	} else {
+            		finalString.append(array[i].charAt(j));
+            	}
+            }
+            array[i] = finalString.toString(); 
+    	}
         return array;
+    }
+    
+    private static boolean isInteger(String s) {
+        try { 
+            Integer.parseInt(s); 
+        } catch(NumberFormatException e) { 
+            return false; 
+        }
+        return true;
     }
 
 }
